@@ -1,2 +1,6 @@
-import {cp,mkdir,rm} from 'node:fs/promises';
-await rm('dist',{recursive:true,force:true});await mkdir('dist',{recursive:true});await cp('index.html','dist/index.html');await cp('src','dist/src',{recursive:true});console.log('Static production bundle written to dist/.');
+import {mkdir,rm,cp} from 'node:fs/promises';
+const files=['index.html','main.js','engine.js','cards.js','protocol.js','style.css'];
+await rm('dist',{recursive:true,force:true});
+await mkdir('dist',{recursive:true});
+for(const file of files) await cp(file,`dist/${file}`);
+console.log('Static production bundle written to dist/.');
