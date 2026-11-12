@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {starterDecks,cardDatabase,getCard} from '../src/cards.js';
+import {starterDecks,cardDatabase,getCard} from './cards.js';
 import {createGame,validateDeck,advancePhase,current,opponent,canAscend,ascend,playCard,attack,allUnits,draw,heal,effectiveUnitPower} from '../src/engine.js';
 
 test('six faction starter decks are legal 50-card lists',()=>{
