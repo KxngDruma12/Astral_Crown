@@ -1,0 +1,30 @@
+name: Verify Astracrown
+
+on:
+  push:
+    branches:
+      - main
+      - feature/online-multiplayer
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test-and-build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Check Node and browser module syntax
+        run: |
+          node --check server.mjs
+          node --check multiplayer.mjs
+          node --check multiplayer-client.js
+      - name: Run test suite
+        run: npm test
+      - name: Build production bundle
+        run: npm run build

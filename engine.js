@@ -1,9 +1,10 @@
 import {getCard,starterDecks} from './cards.js';
 export const clone=o=>JSON.parse(JSON.stringify(o));
-export const shuffle=a=>{const b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;};
-const makePlayer=(id,deck,leader,isAI=false)=>({id,isAI,leader:clone(getCard(leader)),stage:0,turns:0,deck:shuffle(deck.map(id=>({...clone(getCard(id)),uid:`card-${uid++}`}))),hand:[],discard:[],damage:0,maxAether:1,aether:1,front:[null,null,null],support:[null,null,null],relic:null,spell:null,once:{},status:[]});
-export function createGame(deck=starterDecks[0],opponent=starterDecks[1]){
- const players=[makePlayer('you',deck.cards,deck.leader),makePlayer('rival',opponent.cards,opponent.leader,true)];
+export const shuffle=(a,random=Math.random)=>{const b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;};
+const makePlayer=(id,deck,leader,isAI=false,random=Math.random)=>({id,isAI,leader:clone(getCard(leader)),stage:0,turns:0,deck:shuffle(deck.map(id=>({...clone(getCard(id)),uid:`card-${uid++}`})),random),hand:[],discard:[],damage:0,maxAether:1,aether:1,front:[null,null,null],support:[null,null,null],relic:null,spell:null,once:{},status:[]});
+export function createGame(deck=starterDecks[0],opponent=starterDecks[1],options={}){
+ const random=typeof options.random==='function'?options.random:Math.random;
+ const players=[makePlayer('you',deck.cards,deck.leader,false,random),makePlayer('rival',opponent.cards,opponent.leader,true,random)];
  players.forEach(p=>{for(let i=0;i<5;i++)p.hand.push(p.deck.shift());});
  return {players,active:0,turn:1,phase:'refresh',winner:null,log:['The Astracrown awakens. Your first turn begins.'],pending:null,history:[],firstPlayer:0};
 }

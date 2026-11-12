@@ -13,6 +13,7 @@
 - [x] Six damage defeat, trigger reveal, healing gate and hand limit.
 - [x] Aether ramp and refresh, four-stage Ascension and faction Leader passives.
 - [x] Frontline and support formations, combat and relic bonuses.
+- [x] Optional seeded shuffle source for deterministic server-side match setup.
 
 ## Milestone 3: Effects and decks
 
@@ -40,5 +41,13 @@
 ## Milestone 7: Verification
 
 - [x] Node rule-engine and online-protocol contract tests, UI rendering smoke test, and battle save/resume smoke test.
-- [x] Static production build and HTTP asset smoke test.
-- [ ] Full browser/mobile interaction test on physical devices; Chromium headless execution was unavailable in the current environment.
+- [ ] Full browser/mobile interaction test on physical devices.
+
+## Milestone 8: Online multiplayer
+
+- [x] Two-player room creation and join codes.
+- [x] Starter deck selection and ready-up flow.
+- [x] Shared rules-engine execution on the server with turn/action validation.
+- [x] Per-player redaction of opponent hand and deck contents.
+- [x] Sequenced state snapshots, Server-Sent Events and reconnect recovery.
+- [ ] Accounts, custom-deck synchronization, ranked matchmaking, persistent matches, abuse controls and public-service load testing.

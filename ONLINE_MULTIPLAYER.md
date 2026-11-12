@@ -1,24 +1,33 @@
-# Online Multiplayer Boundary (Not Live)
+# Online Multiplayer
 
-Online multiplayer is **not implemented**. The current browser build has no account service, matchmaking, transport, remote authority, synchronization, reconnect or anti-cheat service. This document defines the seam for a future server-authoritative implementation.
+Online 1v1 play is implemented as an initial server-authoritative slice.
 
-## Proposed authority model
+## Run it
 
-1. A match server owns both player states, random seeds, turn ownership, phase, card draws and effect resolution.
-2. Clients send intent envelopes, never state mutations. The server validates the active player, sequence number, phase, Aether, card ownership, target and legal action before applying an action through the same rules engine.
-3. The server broadcasts a monotonically sequenced event or state snapshot. Clients render confirmed state only; animations are downstream presentation.
-4. Reconnect uses the last confirmed sequence and a fresh authoritative snapshot. Duplicate or out-of-order actions are rejected.
-5. Matchmaking assigns a server match ID and both authenticated player IDs. Account identity and deck ownership are verified server-side.
+Requires Node.js 20+.
 
-## Contract groundwork
+```bash
+npm start
+```
 
-`src/network/protocol.js` defines versioned action and snapshot envelopes and validates action types. It is a data-contract module only. It does not open sockets, authenticate users, create matches or synchronize state.
+Open `http://localhost:4173/multiplayer`. Create a room, share its six-character code, and have the second player join. Both players choose one of the six official starter decks and press Ready.
 
-## Required before release
+For two devices on the same network, the host device runs the Node server and the other device opens the host's LAN IP on port 4173. Public deployment requires HTTPS and a host that supports long-lived Server-Sent Event connections.
 
-- Authenticated account/session service and deck ownership checks.
-- Matchmaking queue, match lifecycle and server-side timeouts.
-- Server-hosted deterministic rules engine and secure random seed handling.
-- Ordered action/event stream, replay log, reconnect and desync recovery.
-- Rate limits, anti-replay checks, anti-cheat validation and abuse reporting.
-- Load, latency, packet-loss and concurrent-match tests.
+## Authority and synchronization
+
+- The server owns both game states, deck shuffles, turn ownership, phases, card draws, effects and match results.
+- The shared `engine.js` rules engine resolves every accepted action. Multiplayer uses the same game engine as the modern solo battle module rather than the demonstration StubEngine.
+- Clients send intent actions only: `PLAY_CARD`, `ASCEND`, `ATTACK`, `SIGNATURE` and `ADVANCE_PHASE`.
+- Each accepted action increments a match sequence. Clients submit the sequence they last observed; stale actions are rejected and clients fetch the latest snapshot.
+- Server-Sent Events deliver state and match events. EventSource reconnects automatically, and a fresh state request restores the current view.
+- Opponent hand and deck card data are redacted per seat. Only card counts are disclosed.
+- Match tokens are random, high-entropy bearer tokens. They are held in the browser tab's session storage for refresh recovery.
+
+## Current scope and release gaps
+
+- Six official starter decks only. Custom deck synchronization and server-side deck ownership checks are not connected.
+- No account identity, ranked matchmaking, persistent match history, chat, spectator mode, abuse-report workflow or production anti-cheat telemetry.
+- Match state is in memory and rooms expire after one hour of inactivity. Restarting the process ends all active matches.
+- Add distributed storage, authenticated accounts, matchmaking, operational monitoring, rate limits at the edge, abuse controls, load testing and recovery drills before treating this as a public competitive service.
+- A static host such as GitHub Pages can serve the client files but cannot host the Node match API. The Node server and static client must be deployed together, or the API must be deployed separately and the client configured to use it.

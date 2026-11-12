@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {createActionEnvelope,validateActionEnvelope,createSnapshotEnvelope,PROTOCOL_VERSION} from '../src/network/protocol.js';
+import {createActionEnvelope,validateActionEnvelope,createSnapshotEnvelope,PROTOCOL_VERSION} from './protocol.js';
 
 test('action envelope is versioned and validates legal action types',()=>{
  const msg=createActionEnvelope({matchId:'match-1',playerId:'p1',sequence:1,action:{type:'ATTACK',attackerId:'u-1',target:'leader'}});
