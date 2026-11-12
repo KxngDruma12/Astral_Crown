@@ -19,6 +19,11 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
+      - name: Check Node and browser module syntax
+        run: |
+          node --check server.mjs
+          node --check multiplayer.mjs
+          node --check multiplayer-client.js
       - name: Run test suite
         run: npm test
       - name: Build production bundle
