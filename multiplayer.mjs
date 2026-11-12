@@ -127,9 +127,15 @@ class Match {
     });
   }
 
-  opponentStatus() {
-    const opponent = this.seats[1];
+  opponentStatus(seatIndex) {
+    const opponent = this.seats[1 - seatIndex];
     return { joined: !!opponent, ready: !!opponent?.ready };
+  }
+
+  broadcastOpponentStatus() {
+    this.seats.forEach((seat, index) => {
+      if (seat) this.emitTo(index, 'opponent:status', this.opponentStatus(index));
+    });
   }
 
   startIfReady() {
@@ -223,11 +229,10 @@ function eventStream(req, res, match, seatIndex) {
     clearInterval(heartbeat);
     match.seats[seatIndex]?.streams.delete(res);
   };
-  req.on('close', cleanup);
   res.on('close', cleanup);
   res.write(`event: hello\ndata: ${JSON.stringify({ matchId: match.id, seat: seatIndex, status: match.status })}\n\n`);
   if (match.game) match.emitTo(seatIndex, 'match:state', match.stateFor(seatIndex));
-  match.emitTo(seatIndex, 'opponent:status', match.opponentStatus());
+  match.emitTo(seatIndex, 'opponent:status', match.opponentStatus(seatIndex));
 }
 
 export async function handleMultiplayerApi(req, res, url) {
@@ -280,7 +285,7 @@ export async function handleMultiplayerApi(req, res, url) {
       token: randomBytes(32).toString('base64url'),
       deckId, ready: false, streams: new Set(), lastActionAt: 0,
     };
-    match.broadcast('opponent:status', match.opponentStatus());
+    match.broadcastOpponentStatus();
     json(res, 200, { matchId, token: match.seats[1].token, seat: 1 });
     return true;
   }
