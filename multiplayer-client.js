@@ -242,7 +242,7 @@ function battleScreen() {
   const hand = me.hand.map((card, index) => {
     const hidden = card.hidden;
     const selected = selectedCard === index;
-    const disabled = !myTurn || snapshot.phase !== 'main' || hidden || card.cost > me.aether;
+    const disabled = !myTurn || snapshot.phase !== 'main' || hidden || card.cost > me.aether || card.type === 'Trigger';
     return `<button class="hand-card ${selected ? 'selected' : ''}" data-hand="${index}" ${disabled ? 'disabled' : ''}>
       <span class="hand-cost">${hidden ? '✦' : card.cost}</span>
       <b>${hidden ? 'Hidden card' : escapeHtml(card.name)}</b>
