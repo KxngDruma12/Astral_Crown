@@ -53,7 +53,7 @@ test('online match supports two seats, ready-up, turn authority and private hand
   const hostState = await get(base, `/api/match/${matchId}/state?token=${hostToken}`);
   assert.equal(hostState.status, 200);
   assert.equal(hostState.body.phase, 'draw');
-  assert.equal(hostState.body.activePlayer, 0);
+  assert.equal(hostState.body.active, 0);
   assert.ok(hostState.body.players[0].hand.every(card => !card.hidden));
   assert.ok(hostState.body.players[1].hand.every(card => card.hidden));
   assert.ok(hostState.body.players[1].deck.every(card => card.hidden));
