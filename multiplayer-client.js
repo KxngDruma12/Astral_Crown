@@ -179,7 +179,7 @@ function playerLabel(index) {
 
 function cardMarkup(card, index, zone, slot, mine) {
   if (!card) {
-    if (mine && snapshot?.status === 'active' && snapshot.activePlayer === seat &&
+    if (mine && snapshot?.status === 'active' && snapshot.active === seat &&
         snapshot.phase === 'main' && selectedCard !== null) {
       const selected = snapshot.players[seat].hand[selectedCard];
       if (selected?.type === 'Unit') {
@@ -188,7 +188,7 @@ function cardMarkup(card, index, zone, slot, mine) {
     }
     return '<div class="unit-slot empty-slot"><span>◇</span><small>OPEN FORMATION</small></div>';
   }
-  const canSelect = mine && snapshot?.status === 'active' && snapshot.activePlayer === seat;
+  const canSelect = mine && snapshot?.status === 'active' && snapshot.active === seat;
   const isSelected = selectedAttacker === card.uid;
   const targetable = !mine && selectedAttacker !== null;
   const classes = ['unit-card', card.exhausted ? 'exhausted' : '', isSelected ? 'selected' : '', targetable ? 'targetable' : ''].filter(Boolean).join(' ');
@@ -237,7 +237,7 @@ function battleScreen() {
   if (!snapshot?.players) return roomScreen();
   const me = snapshot.players[seat];
   const enemy = snapshot.players[1 - seat];
-  const myTurn = snapshot.activePlayer === seat && snapshot.status === 'active';
+  const myTurn = snapshot.active === seat && snapshot.status === 'active';
   const phaseNames = { draw: 'DRAW', ascension: 'ASCENSION', main: 'MAIN PHASE', battle: 'BATTLE PHASE', end: 'END TURN' };
   const hand = me.hand.map((card, index) => {
     const hidden = card.hidden;
