@@ -11,6 +11,7 @@ let snapshot = null;
 let opponent = { joined: false, ready: false };
 let selectedCard = null;
 let selectedAttacker = null;
+let roomDeckId = starterDecks[0].id;
 let notice = '';
 let busy = false;
 
@@ -93,6 +94,7 @@ async function enter(id, sessionToken, playerSeat) {
   seat = playerSeat;
   selectedCard = null;
   selectedAttacker = null;
+  roomDeckId = starterDecks[playerSeat]?.id || starterDecks[0].id;
   saveSession();
   connect();
   await refreshState();
@@ -159,7 +161,7 @@ async function ready() {
   if (busy) return;
   busy = true;
   try {
-    const deckId = $('room-deck')?.value;
+    const deckId = roomDeckId;
     const result = await request(`/api/match/${encodeURIComponent(matchId)}/ready`, { token, deckId });
     notice = result.started ? 'Both challengers are ready. The duel begins!' : 'You are ready. Waiting for your opponent…';
     await refreshState();
@@ -276,7 +278,6 @@ function battleScreen() {
 }
 
 function roomScreen() {
-  const deckId = seat === 0 ? starterDecks[0].id : starterDecks[1].id;
   return `
     <section class="room-panel">
       <p class="eyebrow">THE ARENA IS FORMED</p>
@@ -285,7 +286,7 @@ function roomScreen() {
       <div class="room-code"><b>${escapeHtml(matchId)}</b><button data-action="copy">Copy code</button></div>
       <div class="room-status"><span class="${opponent.joined ? 'live' : ''}"></span><b>${opponent.joined ? 'Opponent connected' : 'Waiting for opponent…'}</b><small>${opponent.ready ? 'Your opponent is ready.' : opponent.joined ? 'Your opponent is choosing a deck.' : 'A second Starborne must join this room.'}</small></div>
       <label for="room-deck">Your starter deck</label>
-      <select id="room-deck" ${snapshot?.status !== 'waiting' ? 'disabled' : ''}>${deckOptions(starterDecks[seat]?.id || deckId)}</select>
+      <select id="room-deck" ${snapshot?.status !== 'waiting' ? 'disabled' : ''}>${deckOptions(roomDeckId)}</select>
       <button class="primary" data-action="ready" ${busy || !opponent.joined ? 'disabled' : ''}>I'm ready <span>↗</span></button>
       <p class="notice" role="status">${escapeHtml(notice || 'You can change your deck until the match starts.')}</p>
       <button class="text-button" data-action="exit">Leave room</button>
@@ -301,6 +302,10 @@ function render() {
   }
   app.innerHTML = roomScreen();
 }
+
+app.addEventListener('change', event => {
+  if (event.target.id === 'room-deck') roomDeckId = event.target.value;
+});
 
 app.addEventListener('click', async event => {
   const button = event.target.closest('button');
