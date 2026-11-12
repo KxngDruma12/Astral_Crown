@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {starterDecks,cardDatabase,getCard} from './cards.js';
-import {createGame,validateDeck,advancePhase,current,opponent,canAscend,ascend,playCard,attack,allUnits,draw,heal,effectiveUnitPower} from '../src/engine.js';
+import {createGame,validateDeck,advancePhase,current,opponent,canAscend,ascend,playCard,attack,allUnits,draw,heal,effectiveUnitPower} from './engine.js';
 
 test('six faction starter decks are legal 50-card lists',()=>{
  assert.equal(starterDecks.length,6);
@@ -39,10 +39,10 @@ test('a non-trigger revealed on a successful Leader hit causes one damage and en
  attack(g,attacker.uid,'leader');assert.equal(e.damage,1);assert.equal(e.hand.at(-1).uid,'test-reveal');
 });
 test('Sovereign Signature requires Stage 3 and two Aether, and is once per turn',async()=>{
- const {canActivateSignature,activateSignature}=await import('../src/engine.js');const g=createGame(starterDecks[0],starterDecks[1]),p=current(g);p.stage=3;p.aether=2;g.phase='main';assert.equal(canActivateSignature(p),true);assert.equal(activateSignature(g),true);assert.equal(p.aether,0);assert.equal(canActivateSignature(p),false);
+ const {canActivateSignature,activateSignature}=await import('./engine.js');const g=createGame(starterDecks[0],starterDecks[1]),p=current(g);p.stage=3;p.aether=2;g.phase='main';assert.equal(canActivateSignature(p),true);assert.equal(activateSignature(g),true);assert.equal(p.aether,0);assert.equal(canActivateSignature(p),false);
 });
 test('the AI deploys and attacks through the same legal action functions',async()=>{
- const {aiChooseMove}=await import('../src/engine.js');const g=createGame(starterDecks[0],starterDecks[1]);g.active=1;const p=current(g);p.hand=[{...structuredClone(getCard('umbral-unit-1')),uid:'ai-card'}];p.aether=10;g.phase='main';assert.equal(aiChooseMove(g,'normal'),'play');assert.ok(p.front[0]);g.phase='battle';assert.equal(aiChooseMove(g,'normal'),'attack');assert.equal(p.front[0].exhausted,true);
+ const {aiChooseMove}=await import('./engine.js');const g=createGame(starterDecks[0],starterDecks[1]);g.active=1;const p=current(g);p.hand=[{...structuredClone(getCard('umbral-unit-1')),uid:'ai-card'}];p.aether=10;g.phase='main';assert.equal(aiChooseMove(g,'normal'),'play');assert.ok(p.front[0]);g.phase='battle';assert.equal(aiChooseMove(g,'normal'),'attack');assert.equal(p.front[0].exhausted,true);
 });
 test('catalogue has the requested minimum unit rarity counts',()=>{
  const units=cardDatabase.filter(c=>c.type==='Unit');const count=r=>units.filter(c=>c.rarity===r).length;
@@ -62,7 +62,7 @@ test('frontline support and relics contribute to effective power',()=>{
 });
 
 test('Easy prioritizes cheap deployment while Normal prioritizes board power',async()=>{
- const {aiChooseMove}=await import('../src/engine.js');
+ const {aiChooseMove}=await import('./engine.js');
  const make=()=>{const g=createGame(starterDecks[0],starterDecks[1]);g.active=1;const p=current(g);p.stage=2;p.aether=10;p.hand=[{...structuredClone(getCard('solar-unit-1')),uid:'cheap'},{...structuredClone(getCard('solar-unit-6')),uid:'strong'}];g.phase='main';return {g,p};};
  const easy=make();aiChooseMove(easy.g,'easy');assert.equal(easy.p.front[0].id,'solar-unit-1');
  const normal=make();aiChooseMove(normal.g,'normal');assert.equal(normal.p.front[0].id,'solar-unit-6');
