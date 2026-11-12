@@ -110,6 +110,7 @@ function connect() {
   stream.addEventListener('match:state', event => {
     snapshot = JSON.parse(event.data);
     if (snapshot.status === 'active' || snapshot.status === 'finished') selectedCard = null;
+    if (snapshot.status !== 'active' || snapshot.active !== seat || snapshot.phase !== 'battle') selectedAttacker = null;
     render();
   });
   stream.addEventListener('match:event', event => {
