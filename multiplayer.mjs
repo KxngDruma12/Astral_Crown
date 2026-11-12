@@ -327,7 +327,7 @@ export async function handleMultiplayerApi(req, res, url) {
     }
     if (body.deckId) match.seats[seatIndex].deckId = body.deckId;
     match.seats[seatIndex].ready = true;
-    match.broadcast('opponent:status', match.opponentStatus());
+    match.broadcastOpponentStatus();
     const started = match.startIfReady();
     json(res, 200, { ok: true, started });
     return true;
